@@ -78,7 +78,7 @@ class EditFriendVC: UIViewController,BindableType {
         //from the viewModel
         viewModel.isValid.map { $0 }
             .bind(to: submitBtn.rx.isEnabled)
-            .disposed(by: rxdisposeBag)
+            .disposed(by: rx.disposeBag)
         
         
     }
