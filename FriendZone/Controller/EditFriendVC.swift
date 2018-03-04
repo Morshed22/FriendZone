@@ -9,9 +9,10 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import NSObject_Rx
 
 class EditFriendVC: UIViewController,BindableType {
-      let disposeBag = DisposeBag()
+     // let disposeBag = DisposeBag()
     
     @IBOutlet weak var firstNameTextField: UITextField!
 
@@ -37,36 +38,48 @@ class EditFriendVC: UIViewController,BindableType {
     
     func configureAllTextField(){
        
-        
-//        let valids = [firstNameTextField, lastNameTextField, phoneNumberTextField].map {field in
-//            field?.rx.text.map({ _ in return (field?.text ?? "").count > 0 })
-//        }
 //
-//       let everythingValid = Observable.combineLatest(valids)
-//          { iterator ->Bool  in
-//            iterator.reduce(true, { return $0 && $1 })
+//        let firstNameValid: Observable<Bool> = firstNameTextField.rx.text.orEmpty
+//            .map{ ($0).count > 0}
+//            .share(replay: 1)
 //
-//        }
+//        let secondNameValid: Observable<Bool> = lastNameTextField.rx.text.orEmpty
+//            .map{ $0.count > 0
+//        }.share(replay: 1)
+//
+//        let phoneNumberValid: Observable<Bool> = phoneNumberTextField.rx.text.orEmpty
+//            .map{ $0.count > 0
+//        }.share(replay: 1)
+//
+//        let everythingValid = Observable.combineLatest(firstNameValid, secondNameValid, phoneNumberValid) { $0 && $1 && $2}
+//            .share(replay: 1)
+//
+//
+//        everythingValid
+//            .bind(to: submitBtn.rx.isEnabled)
+//            .disposed(by: disposeBag)
         
-        let firstNameValid: Observable<Bool> = firstNameTextField.rx.text.orEmpty
-            .map{ ($0).count > 0}
-            .share(replay: 1)
-
-        let secondNameValid: Observable<Bool> = lastNameTextField.rx.text.orEmpty
-            .map{ $0.count > 0
-        }.share(replay: 1)
-
-        let phoneNumberValid: Observable<Bool> = phoneNumberTextField.rx.text.orEmpty
-            .map{ $0.count > 0
-        }.share(replay: 1)
-
-        let everythingValid = Observable.combineLatest(firstNameValid, secondNameValid, phoneNumberValid) { $0 && $1 && $2}
-            .share(replay: 1)
+        firstNameTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.firstname)
+            .disposed(by: rx.disposeBag)
         
-
-        everythingValid
+        lastNameTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.lastname)
+            .disposed(by: rx.disposeBag)
+        
+        
+        phoneNumberTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.lastname)
+            .disposed(by: rx.disposeBag)
+        
+        //from the viewModel
+        viewModel.isValid.map { $0 }
             .bind(to: submitBtn.rx.isEnabled)
-            .disposed(by: disposeBag)
+            .disposed(by: rxdisposeBag)
+        
         
     }
     
