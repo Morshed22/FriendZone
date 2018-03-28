@@ -36,40 +36,57 @@ class EditFriendViewModel:FriendViewModel{
     }
     
     let isValid: Observable<Bool>
+    let params: Observable<[String:Any]>
     
     let onUpdate: Action<[String:Any], JSON>
+    //let action :Action<Observable<(String,String, String)>, JSON>
     
     let disposeBag = DisposeBag()
     
     init( coordinator: SceneCoordinatorType, friendService:FriendService) {
         
-        isValid = Observable.combineLatest(self.firstname.asObservable(), self.lastname.asObservable(), self.phonenumber.asObservable())
-        { (firstname, lastname,phonenumber) in
-            return firstname.count > 0
-                && lastname.count > 0 && phonenumber.count > 0
+       let allInputs = Observable.combineLatest(self.firstname.asObservable(), self.lastname.asObservable(), self.phonenumber.asObservable())
+        { (firstname, lastname,phonenumber) in return (firstname, lastname,phonenumber)}
+        
+        params = allInputs.map{ (firstname, lastname,phonenumber) in
+            return ["firstname":firstname,
+                    "lastname":lastname,
+                    "phonenumber":phonenumber]
+             }
+        
+        isValid =  allInputs.map{(firstname, lastname,phonenumber) in return firstname.count > 0
+            && lastname.count > 0 && phonenumber.count > 0}
+
+//        onUpdate = Action(enabledIf: isValid, workFactory: {  input in
+//
+//            return friendService.postFriendRequest(url: "https://friendservice.herokuapp.com/addFriend", params: input ).map{$0}
+//        })
+//
+        onUpdate = Action{ input in
+            return friendService.postFriendRequest(url: "https://friendservice.herokuapp.com/addFriend", params: input ).map{$0}
         }
 
-        onUpdate = Action(enabledIf: isValid, workFactory: {  input in
-            return friendService.postFriendRequest(url: "", params: input ).map{$0}
-        })
-        
-        onUpdate.elements.debug()
+
+        onUpdate.elements
             .subscribe(onNext: { json in
             print(json.description)
         }).disposed(by: disposeBag)
+
+
         
-        
-        
-//        onUpdate.execute(setparams(input: input))
+      
 //        onUpdate.executionObservables
-//       .take(1)
-//        .subscribe(onNext: { json in
-//            print(json)
+//       .take(1).debug()
+//            .subscribe(onNext: { json in json.subscribe(onNext: { value in
+//                print(value)
+//            }).disposed(by: self.disposeBag)
+//
 //         // coordinator.pop()
 //        })
 //        .disposed(by: disposeBag)
 
     }
+   
     
 
 }

@@ -74,19 +74,20 @@ class EditFriendVC: UIViewController,BindableType {
         
         phoneNumberTextField.rx.text
             .orEmpty
-            .bind(to: viewModel.lastname)
+            .bind(to: viewModel.phonenumber)
             .disposed(by: rx.disposeBag)
+        
+      viewModel.isValid.bind(to: submitBtn.rx.isEnabled)
+        .disposed(by: rx.disposeBag)
 
-        submitBtn.rx.bind(to: viewModel.onUpdate, input: getDictionaryValue(firstName: firstNameTextField.text!, lastName: lastNameTextField.text!, phoneNumber: phoneNumberTextField.text!))
+       submitBtn.rx.tap.take(1)
+        .withLatestFrom(viewModel.params)
+        .subscribe(viewModel.onUpdate.inputs)
+        .disposed(by: rx.disposeBag)
+        
+
 
     }
     
-    
-    func getDictionaryValue(firstName:String,lastName:String, phoneNumber:String)->[String:Any]{
-        
-        return ["firstname":firstName,
-                "lastName":lastName,
-                "phonenumber":phoneNumber]
-        
-    }
+  
 }
