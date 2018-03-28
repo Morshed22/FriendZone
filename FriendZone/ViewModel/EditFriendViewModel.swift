@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import Action
+import SwiftyJSON
 
 protocol FriendViewModel {
     
@@ -24,7 +25,7 @@ protocol FriendViewModel {
     
    
 }
-struct EditFriendViewModel:FriendViewModel{
+class EditFriendViewModel:FriendViewModel{
     
 
     var firstname = Variable<String>("")
@@ -35,32 +36,40 @@ struct EditFriendViewModel:FriendViewModel{
     }
     
     let isValid: Observable<Bool>
-    let onUpdate: Action<[String:Any], Void>
+    
+    let onUpdate: Action<[String:Any], JSON>
     
     let disposeBag = DisposeBag()
     
-    init( coordinator: SceneCoordinatorType, updateAction: Action<[String:Any], Void>) {
+    init( coordinator: SceneCoordinatorType, friendService:FriendService) {
         
         isValid = Observable.combineLatest(self.firstname.asObservable(), self.lastname.asObservable(), self.phonenumber.asObservable())
         { (firstname, lastname,phonenumber) in
             return firstname.count > 0
                 && lastname.count > 0 && phonenumber.count > 0
         }
-        
-       onUpdate = updateAction
-        
-       onUpdate.executionObservables
-        .take(1)
-        .subscribe(onNext: { _ in
-        coordinator.pop()
+
+        onUpdate = Action(enabledIf: isValid, workFactory: {  input in
+            return friendService.postFriendRequest(url: "", params: input ).map{$0}
         })
-        .disposed(by: disposeBag)
+        
+        onUpdate.elements.debug()
+            .subscribe(onNext: { json in
+            print(json.description)
+        }).disposed(by: disposeBag)
+        
+        
+        
+//        onUpdate.execute(setparams(input: input))
+//        onUpdate.executionObservables
+//       .take(1)
+//        .subscribe(onNext: { json in
+//            print(json)
+//         // coordinator.pop()
+//        })
+//        .disposed(by: disposeBag)
 
     }
     
-   
-    
-    
-    
-    
+
 }

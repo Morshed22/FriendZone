@@ -16,6 +16,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let service = FriendService()
+        let sceneCoordinator = SceneCoordinator(window: window!)
+        let tasksViewModel =  EditFriendViewModel(coordinator: sceneCoordinator, friendService: service)
+        let firstScene = Scene.editFriend(tasksViewModel)
+        sceneCoordinator.transition(to: firstScene, type: .root)
         return true
     }
 

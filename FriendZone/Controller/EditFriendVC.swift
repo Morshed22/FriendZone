@@ -37,48 +37,13 @@ class EditFriendVC: UIViewController,BindableType {
     }
     
     func configureAllTextField(){
-       
-//
-//        let firstNameValid: Observable<Bool> = firstNameTextField.rx.text.orEmpty
-//            .map{ ($0).count > 0}
-//            .share(replay: 1)
-//
-//        let secondNameValid: Observable<Bool> = lastNameTextField.rx.text.orEmpty
-//            .map{ $0.count > 0
-//        }.share(replay: 1)
-//
-//        let phoneNumberValid: Observable<Bool> = phoneNumberTextField.rx.text.orEmpty
-//            .map{ $0.count > 0
-//        }.share(replay: 1)
-//
-//        let everythingValid = Observable.combineLatest(firstNameValid, secondNameValid, phoneNumberValid) { $0 && $1 && $2}
-//            .share(replay: 1)
-//
-//
-//        everythingValid
-//            .bind(to: submitBtn.rx.isEnabled)
-//            .disposed(by: disposeBag)
+
         
-        firstNameTextField.rx.text
-            .orEmpty
-            .bind(to: viewModel.firstname)
-            .disposed(by: rx.disposeBag)
-        
-        lastNameTextField.rx.text
-            .orEmpty
-            .bind(to: viewModel.lastname)
-            .disposed(by: rx.disposeBag)
-        
-        
-        phoneNumberTextField.rx.text
-            .orEmpty
-            .bind(to: viewModel.lastname)
-            .disposed(by: rx.disposeBag)
         
         //from the viewModel
-        viewModel.isValid.map { $0 }
-            .bind(to: submitBtn.rx.isEnabled)
-            .disposed(by: rx.disposeBag)
+//        viewModel.isValid.map { $0 }
+//            .bind(to: submitBtn.rx.isEnabled)
+//            .disposed(by: rx.disposeBag)
         
         
     }
@@ -96,6 +61,32 @@ class EditFriendVC: UIViewController,BindableType {
     */
 
     func bindViewModel() {
+        firstNameTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.firstname)
+            .disposed(by: rx.disposeBag)
+        
+        lastNameTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.lastname)
+            .disposed(by: rx.disposeBag)
+        
+        
+        phoneNumberTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.lastname)
+            .disposed(by: rx.disposeBag)
+
+        submitBtn.rx.bind(to: viewModel.onUpdate, input: getDictionaryValue(firstName: firstNameTextField.text!, lastName: lastNameTextField.text!, phoneNumber: phoneNumberTextField.text!))
+
+    }
+    
+    
+    func getDictionaryValue(firstName:String,lastName:String, phoneNumber:String)->[String:Any]{
+        
+        return ["firstname":firstName,
+                "lastName":lastName,
+                "phonenumber":phoneNumber]
         
     }
 }

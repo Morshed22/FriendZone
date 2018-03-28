@@ -33,10 +33,10 @@ extension Scene {
       return nc
 
     case .editFriend(let viewModel):
-      let nc = storyboard.instantiateViewController(withIdentifier: "EditFriendVC") as! UINavigationController
-      var vc = nc.viewControllers.first as! EditFriendVC
-      vc.bindViewModel(to: viewModel)
-      return nc
+        var vc = storyboard.instantiateViewController(withIdentifier: "EditFriendVC") as! EditFriendVC
+     // var vc = nc.viewControllers.first as! EditFriendVC
+      vc.bindViewModel(to:viewModel)
+      return vc
     }
   }
 }

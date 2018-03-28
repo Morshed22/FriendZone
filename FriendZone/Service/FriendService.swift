@@ -18,8 +18,7 @@ struct FriendService:FriendServiceType {
         
     }
     
-    
-    func postFriendRequest(url:String,params:[String:Any])->Observable<JSON> {
+    func postFriendRequest(url:String,params:[String:Any]?)->Observable<JSON> {
         
       return Observable.create() { observer in
           
