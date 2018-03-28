@@ -69,10 +69,13 @@ class EditFriendViewModel:FriendViewModel{
 
         onUpdate.elements
             .subscribe(onNext: { json in
+                print("json")
             print(json.description)
         }).disposed(by: disposeBag)
 
-
+        onUpdate.errors.subscribe({ err in
+            print(err.debugDescription)
+        }).disposed(by: disposeBag)
         
       
 //        onUpdate.executionObservables

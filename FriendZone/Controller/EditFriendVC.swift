@@ -28,25 +28,14 @@ class EditFriendVC: UIViewController,BindableType {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        configureAllTextField()
+        
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    func configureAllTextField(){
-
-        
-        
-        //from the viewModel
-//        viewModel.isValid.map { $0 }
-//            .bind(to: submitBtn.rx.isEnabled)
-//            .disposed(by: rx.disposeBag)
-        
-        
-    }
+ 
     
     
     
