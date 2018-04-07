@@ -35,10 +35,8 @@ struct FriendService:FriendServiceType {
                 }
             })
         return Disposables.create()
-                
             
     }
-            
     }
     
     @discardableResult

@@ -10,6 +10,7 @@ target 'FriendZone' do
     pod 'RxCocoa',    '~> 4.0'
     pod 'Action'
     pod 'NSObject+Rx'
+    pod 'PKHUD', '~> 5.0'
   # Pods for FriendZone
 
 end
