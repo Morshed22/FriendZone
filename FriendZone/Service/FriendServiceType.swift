@@ -8,19 +8,17 @@
 
 import Foundation
 import RxSwift
-
-enum FriendServiceError:Error{
-    
-    case unauthorized
-    case dataNotFound
-    case serverFailure
-}
+import SwiftyJSON
 
 
 protocol FriendServiceType {
     
     @discardableResult
-    func createFriend(url:String, params:[String:Any]) -> Observable<Friend?>
+    func createFriend(url:String, params:[String:Any]) -> Observable<JSON>
+    
+    @discardableResult
+    func getFriendList(url:String) -> Observable<[Friend]>
+    
 //    
 //    @discardableResult
 //    func delete(task: Friend) -> Observable<Void>

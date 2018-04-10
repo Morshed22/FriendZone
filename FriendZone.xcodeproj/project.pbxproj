@@ -28,6 +28,8 @@
 		030EF7BE204AC58D0007F3CF /* FriendServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EF7BD204AC58D0007F3CF /* FriendServiceType.swift */; };
 		030EF7C0204AC7120007F3CF /* FriendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030EF7BF204AC7120007F3CF /* FriendService.swift */; };
 		032D7AE820788736004E7FE7 /* VC+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 032D7AE720788736004E7FE7 /* VC+Extension.swift */; };
+		033D2DA1207B891C00B50BC6 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033D2DA0207B891C00B50BC6 /* APIError.swift */; };
+		033D2DA3207B970900B50BC6 /* FriendCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 033D2DA2207B970900B50BC6 /* FriendCellViewModel.swift */; };
 		03C4C0AF5F91E7527CD24099 /* Pods_FriendZone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A89128E6D1B2D34892C19E0 /* Pods_FriendZone.framework */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +58,8 @@
 		030EF7BD204AC58D0007F3CF /* FriendServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendServiceType.swift; sourceTree = "<group>"; };
 		030EF7BF204AC7120007F3CF /* FriendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendService.swift; sourceTree = "<group>"; };
 		032D7AE720788736004E7FE7 /* VC+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VC+Extension.swift"; sourceTree = "<group>"; };
+		033D2DA0207B891C00B50BC6 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
+		033D2DA2207B970900B50BC6 /* FriendCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendCellViewModel.swift; sourceTree = "<group>"; };
 		6A89128E6D1B2D34892C19E0 /* Pods_FriendZone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FriendZone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE6F46FEF29FEE3692E362AC /* Pods-FriendZone.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FriendZone.release.xcconfig"; path = "Pods/Target Support Files/Pods-FriendZone/Pods-FriendZone.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -76,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				030394872077E43300F2BF45 /* Alert.swift */,
+				033D2DA0207B891C00B50BC6 /* APIError.swift */,
 			);
 			path = Helper;
 			sourceTree = "<group>";
@@ -161,6 +166,7 @@
 			children = (
 				030EF7B6204AA5E00007F3CF /* FriendListViewModel.swift */,
 				030EF7B8204AA6210007F3CF /* EditFriendViewModel.swift */,
+				033D2DA2207B970900B50BC6 /* FriendCellViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -305,9 +311,11 @@
 				"${SRCROOT}/Pods/Target Support Files/Pods-FriendZone/Pods-FriendZone-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Action/Action.framework",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/Differentiator/Differentiator.framework",
 				"${BUILT_PRODUCTS_DIR}/NSObject+Rx/NSObject_Rx.framework",
 				"${BUILT_PRODUCTS_DIR}/PKHUD/PKHUD.framework",
 				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
+				"${BUILT_PRODUCTS_DIR}/RxDataSources/RxDataSources.framework",
 				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
@@ -315,9 +323,11 @@
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Action.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Differentiator.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NSObject_Rx.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PKHUD.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxDataSources.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
@@ -341,6 +351,8 @@
 				030EF7AF204A8CEC0007F3CF /* SceneCoordinatorType.swift in Sources */,
 				030EF7A3204A7F660007F3CF /* FriendCell.swift in Sources */,
 				030EF7BB204AAE720007F3CF /* BindableType.swift in Sources */,
+				033D2DA3207B970900B50BC6 /* FriendCellViewModel.swift in Sources */,
+				033D2DA1207B891C00B50BC6 /* APIError.swift in Sources */,
 				030EF7AD204A8CEC0007F3CF /* Scene.swift in Sources */,
 				030EF7B9204AA6210007F3CF /* EditFriendViewModel.swift in Sources */,
 				030EF7AE204A8CEC0007F3CF /* Scene+ViewController.swift in Sources */,

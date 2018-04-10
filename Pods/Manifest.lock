@@ -3,10 +3,15 @@ PODS:
     - RxCocoa (~> 4.0)
     - RxSwift (~> 4.0)
   - Alamofire (4.6.0)
+  - Differentiator (3.0.2)
   - NSObject+Rx (4.2.0):
     - RxSwift (~> 4.0)
   - PKHUD (5.0.0)
   - RxCocoa (4.1.2):
+    - RxSwift (~> 4.0)
+  - RxDataSources (3.0.2):
+    - Differentiator (~> 3.0)
+    - RxCocoa (~> 4.0)
     - RxSwift (~> 4.0)
   - RxSwift (4.1.2)
   - SwiftyJSON (4.0.0)
@@ -17,18 +22,21 @@ DEPENDENCIES:
   - NSObject+Rx
   - PKHUD (~> 5.0)
   - RxCocoa (~> 4.0)
+  - RxDataSources (~> 3.0)
   - RxSwift (~> 4.0)
   - SwiftyJSON
 
 SPEC CHECKSUMS:
   Action: d60087ebce41b969d1afdad01e2fa1372a82f26e
   Alamofire: f41a599bd63041760b26d393ec1069d9d7b917f4
+  Differentiator: a87be69eba49ec4ab460c7671143ee3a9eececfd
   NSObject+Rx: cbbc05e3cb3ad446cdbced3e00e39c9efaf02925
   PKHUD: 3c001512c6e002091184197a8de7a20420786e3b
   RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
+  RxDataSources: cb7c31e652a87ebb919da45f716bbb87b3765f6b
   RxSwift: e49536837d9901277638493ea537394d4b55f570
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
 
-PODFILE CHECKSUM: f92f934537f4944af1ad57b3b01f8dc67df27744
+PODFILE CHECKSUM: 6efa8447bf6a862a9e6553db177b36f8a9bce9cb
 
 COCOAPODS: 1.3.1

@@ -22,6 +22,7 @@ class EditFriendVC: UIViewController,BindableType {
     @IBOutlet weak var phoneNumberTextField: UITextField!
     
     @IBOutlet weak var submitBtn: UIButton!
+    
     var viewModel: EditFriendViewModel!
     
     

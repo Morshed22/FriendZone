@@ -19,8 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let service = FriendService()
         let sceneCoordinator = SceneCoordinator(window: window!)
-        let tasksViewModel =  EditFriendViewModel(coordinator: sceneCoordinator, friendService: service)
-        let firstScene = Scene.editFriend(tasksViewModel)
+        let friendListViewModel =  FriendListViewModel(coordinator: sceneCoordinator, friendService: service)
+        let firstScene = Scene.friendList(friendListViewModel)
         sceneCoordinator.transition(to: firstScene, type: .root)
         return true
     }
