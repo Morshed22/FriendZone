@@ -16,28 +16,13 @@ protocol FriendListModeling{
    // var cellModels2: Observable<[FriendCellViewModel]> { get }
 }
 
-enum FriendTableViewCellType {
-//    var id :Int{
-//        return 0
-//    }
+enum FriendTableViewCellType{
     case normal(cellViewModel: FriendCellViewModel)
     case error(message: String)
     case empty
 }
 
-//extension FriendTableViewCellType:IdentifiableType{
-//    var identity: Int {
-//        return self.id
-//    }
-//    typealias Identity = Int
-//
-//}
-//func ==(lhs: FriendTableViewCellType, rhs: FriendTableViewCellType) -> Bool {
-//    return lhs.id == rhs.id
-//}
 
-
-//typealias SectionModel =  AnimatableSectionModel<String, [FriendTableViewCellType]>
 
 struct FriendListViewModel:FriendListModeling{
     
@@ -54,26 +39,36 @@ struct FriendListViewModel:FriendListModeling{
           self.friendService = friendService
         
         let friendItems  = friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends")
-            .startWith([])
+            .startWith(.success(payload: []))
             .observeOn(MainScheduler.instance)
             .share(replay: 1)
-        
-        
-        cellModels2 = friendItems.filter{ frnd in
-            return frnd.count > 0
-        }.flatMapLatest{friends  in
-                                return Observable.just(
-                                    friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)})}
-        
-       
-        
 
-        cellModels2 = friendItems.catchErrorJustReturn([]).flatMapLatest{ _ in
-            return Observable.just([FriendTableViewCellType.error(message: "not connected")])
-        }
+        cellModels2 = friendItems.map{ result in
+            switch result{
+            case .success(let friends):
+                return friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)}
+            case .failure(let error):
+                return [FriendTableViewCellType.error(message: error.description)]
+            }
+        }.ifEmpty(default: [.empty])
         
-        cellModels2 =  friendItems.ifEmpty(default: [])
-            .flatMapLatest{ _  in  return Observable.just([.empty])}
+        
+//        
+//        cellModels2 = friendItems.filter{ frnd in
+//            return frnd.count > 0
+//        }.flatMapLatest{friends  in
+//                                return Observable.just(
+//                                    friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)})}
+//        
+//       
+//        
+//
+//        cellModels2 = friendItems.catchErrorJustReturn([]).flatMapLatest{ _ in
+//            return Observable.just([FriendTableViewCellType.error(message: "not connected")])
+//        }
+//        
+//        cellModels2 =  friendItems.ifEmpty(default: [])
+      //      .flatMapLatest{ _  in  return Observable.just([.empty])}
 //        .flatMapLatest{friends  in
 //                    return Observable.just(
 //                        friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)})}

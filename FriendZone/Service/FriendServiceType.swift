@@ -17,7 +17,7 @@ protocol FriendServiceType {
     func createFriend(url:String, params:[String:Any]) -> Observable<JSON>
     
     @discardableResult
-    func getFriendList(url:String) -> Observable<[Friend]>
+    func getFriendList(url:String) -> Observable<Result<[Friend], APIError>>
     
 //    
 //    @discardableResult

@@ -12,6 +12,8 @@ import Alamofire
 import SwiftyJSON
 
 struct FriendService:FriendServiceType {
+    
+    
    
     private let queue = DispatchQueue(label: "Friend.FriendService.Queue")
     
@@ -41,23 +43,28 @@ struct FriendService:FriendServiceType {
         }
     }
 
-    func getFriendList(url: String) -> Observable<[Friend]> {
+    func getFriendList(url: String) -> Observable<Result<[Friend], APIError>> {
          return Observable.create() { observer in
         let request =  Alamofire.request(url)
             .validate(statusCode: 200 ..< 300)
             .responseJSON(queue: self.queue) { response in
                 switch response.result {
                 case .success(let value):
-                    guard let jsonArray = value as? [JSON] else {
+                    guard let jsonArray = JSON(value).array   else {
                         observer.onError(APIError.IncorrectDataReturned)
                         return
                     }
                     let friendArray = jsonArray.compactMap{Friend(json: $0)}
-                    observer.onNext(friendArray)
-                    observer.onCompleted()
+                    
+                    observer.onNext(.success(payload: friendArray))
+                    
+                   // observer.onNext(friendArray)
+                   // observer.onCompleted()
                 case .failure(let error):
-                  observer.onError(APIError(error: error))
+                  //observer.onError(APIError(error: error))
+                   observer.onNext(.failure(APIError(error: error)))
                 }
+            observer.onCompleted()
             }
             return Disposables.create(with: {
                 request.cancel()
@@ -73,4 +80,9 @@ struct FriendService:FriendServiceType {
     
     
     
+}
+
+enum Result<T, U> where U: Error {
+    case success(payload: T)
+    case failure(U)
 }

@@ -57,7 +57,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="friendName" destination="9XA-kM-hPx" id="xUH-zd-Wv1"/>
+                                            <outlet property="friendName" destination="PF3-zs-oK0" id="1bP-Rp-Xak"/>
                                             <outlet property="phoneNumber" destination="9XA-kM-hPx" id="5bh-fv-o6I"/>
                                         </connections>
                                     </tableViewCell>

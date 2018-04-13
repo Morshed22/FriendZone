@@ -8,6 +8,7 @@
 
 import Foundation
 public enum APIError: Error {
+    
     /// Unknown or not supported error.
     case Unknown
     
@@ -96,3 +97,26 @@ public enum APIError: Error {
     }
     
 }
+
+extension APIError : CustomStringConvertible{
+    
+    public var description:String {
+        
+        switch self {
+        case .Unknown:
+            return "Unknown things happen"
+        case .NotConnectedToInternet:
+            return "Net Connection Off"
+        case .InternationalRoamingOff:
+            return "International Roming Off"
+        case .NotReachedServer:
+            return "Server is not reacheble"
+        case .ConnectionLost:
+            return "Connection Lost"
+        case .IncorrectDataReturned:
+            return "Data format is not correct"
+        }
+    }
+    
+}
+
