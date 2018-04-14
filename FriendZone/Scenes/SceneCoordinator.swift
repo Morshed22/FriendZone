@@ -31,7 +31,9 @@ class SceneCoordinator: SceneCoordinatorType {
 
   required init(window: UIWindow) {
     self.window = window
-    currentViewController = window.rootViewController!
+    currentViewController = UIViewController()
+    self.window.makeKey()
+    self.window.makeKeyAndVisible()
   }
 
   static func actualViewController(for viewController: UIViewController) -> UIViewController {

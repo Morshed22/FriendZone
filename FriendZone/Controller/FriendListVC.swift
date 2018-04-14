@@ -11,21 +11,49 @@ import RxSwift
 import RxDataSources
 import Action
 import NSObject_Rx
+import PKHUD
 
 class FriendListVC: UIViewController,BindableType {
-    
-    
-    
-    
-    
+   
     @IBOutlet weak var tableView: UITableView!
-    var viewModel: FriendListViewModel!
     
+    var viewModel: FriendListViewModel!
+    var dataSource:RxTableViewSectionedAnimatedDataSource<FriendSectionModel>?
    
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureCell()
         // Do any additional setup after loading the view, typically from a nib.
     }
+    
+   func configureCell(){
+   
+    dataSource = RxTableViewSectionedAnimatedDataSource<FriendSectionModel>(configureCell: {
+        dataSource, tableView, indexPath, itemType in
+        
+        switch itemType {
+            
+        case .normal(let viewModel):
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell") as? FriendCell else {
+                return UITableViewCell()
+            }
+            cell.viewModel = viewModel
+            return cell
+        case .error(let message):
+            let cell = UITableViewCell()
+            cell.isUserInteractionEnabled = false
+            cell.textLabel?.text = message
+            return cell
+        case .empty:
+            let cell = UITableViewCell()
+            cell.isUserInteractionEnabled = false
+            cell.textLabel?.text = "No data available"
+            return cell
+        }
+    })
+
+}
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -36,54 +64,25 @@ class FriendListVC: UIViewController,BindableType {
     
     
     func bindViewModel(){
+ 
+        guard let dataSource = dataSource else {
+            return
+        }
+        
+        viewModel.cellModel
+            .bind(to: tableView.rx.items(dataSource: dataSource))
+            .disposed(by: rx.disposeBag)
         
         
-        
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String,FriendTableViewCellType>>.init(configureCell: { (Section, tableView, indexpath, celltype) -> UITableViewCell in
+        viewModel.isRunning.subscribe(onNext: {  status in
+            PKHUD.sharedHUD.contentView = PKHUDSystemActivityIndicatorView()
+              status ? PKHUD.sharedHUD.show(onView: self.view) : PKHUD.sharedHUD.hide()
             
-            switch celltype {
-                
-            case .normal(let viewModel):
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: "FriendCell") as? FriendCell else {
-                    return UITableViewCell()
-                }
-                cell.viewModel = viewModel
-                return cell
-            case .error(let message):
-                let cell = UITableViewCell()
-                cell.isUserInteractionEnabled = false
-                cell.textLabel?.text = message
-                return cell
-            case .empty:
-                let cell = UITableViewCell()
-                cell.isUserInteractionEnabled = false
-                cell.textLabel?.text = "No data available"
-                return cell
-            }
-            
-        })
+        }).disposed(by: rx.disposeBag)
         
-        
-        
-        viewModel.cellModels2.debug()
-        .flatMapLatest {  cell in
-            return Observable.just([SectionModel(model: "title", items: cell)])
-        }.bind(to: tableView.rx.items(dataSource: dataSource))
-        .disposed(by: rx.disposeBag)
-        //viewModel.cellModels2.bind(to: tableView.rx.items(dataSource: dataSource))
+
 }
-    
-//    func bindViewModel() {
-//
-//
-//
-//
-//
-//        viewModel.cellModels
-//            .bind(to: tableView.rx.items(cellIdentifier: "FriendCell", cellType: FriendCell.self)){ i, cellModel, cell in
-//               cell.viewModel = cellModel
-//        }.disposed(by: rx.disposeBag)
-//    }
+
 
 }
 

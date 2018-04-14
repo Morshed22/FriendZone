@@ -11,25 +11,47 @@ import RxSwift
 import RxDataSources
 import Action
 
+
+typealias FriendSectionModel = AnimatableSectionModel<Int, FriendTableViewCellType>
+
 protocol FriendListModeling{
-   // var cellModels: Observable<[FriendCellViewModel]> { get }
-   // var cellModels2: Observable<[FriendCellViewModel]> { get }
+    var cellModel: Observable<[FriendSectionModel]> { get }
+    var isRunning: Observable<Bool>{ get set }
 }
 
 enum FriendTableViewCellType{
+    
     case normal(cellViewModel: FriendCellViewModel)
     case error(message: String)
     case empty
 }
 
 
+extension FriendTableViewCellType:IdentifiableType,Equatable{
+    
+    static func == (lhs: FriendTableViewCellType, rhs: FriendTableViewCellType) -> Bool {
+          return lhs.identity == rhs.identity
+    }
+    
+    
+    
+    var identity: Int {
+        switch self {
+        case .normal(let model):
+            return model.friendItem.id
+        case .error, .empty:
+            return 0
+        }
+    }
+    
+    typealias Identity = Int
+
+}
+
 
 struct FriendListViewModel:FriendListModeling{
-    
-    
-    
-   // var cellModels: Observable<[FriendCellViewModel]>
-    var cellModels2: Observable<[FriendTableViewCellType]>
+    var isRunning: Observable<Bool>
+    var cellModel: Observable<[FriendSectionModel]>
     
     let coordinator: SceneCoordinatorType
     let friendService:FriendService
@@ -38,19 +60,32 @@ struct FriendListViewModel:FriendListModeling{
           self.coordinator = coordinator
           self.friendService = friendService
         
+       
+        
         let friendItems  = friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends")
             .startWith(.success(payload: []))
             .observeOn(MainScheduler.instance)
             .share(replay: 1)
 
-        cellModels2 = friendItems.map{ result in
+        let activityIndicator = ActivityIndicator()
+        isRunning = activityIndicator.asObservable()
+        
+        cellModel = friendItems.map{ result in
             switch result{
             case .success(let friends):
-                return friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)}
+                if friends.count > 0{
+                    return friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)}
+                }else {
+                   return [.empty]
+                }
+                
             case .failure(let error):
                 return [FriendTableViewCellType.error(message: error.description)]
             }
-        }.ifEmpty(default: [.empty])
+            }.flatMapLatest{ cell in return Observable.just([FriendSectionModel(model: 0, items: cell)])
+                
+            }.trackActivity(activityIndicator)
+            
         
         
 //        
