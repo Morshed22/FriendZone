@@ -16,7 +16,7 @@ typealias FriendSectionModel = AnimatableSectionModel<Int, FriendTableViewCellTy
 
 protocol FriendListModeling{
     var cellModel: Observable<[FriendSectionModel]> { get }
-    var isRunning: Observable<Bool>{ get set }
+    var isRunning: Observable<Bool>{  get }
 }
 
 enum FriendTableViewCellType{
@@ -50,33 +50,26 @@ extension FriendTableViewCellType:IdentifiableType,Equatable{
 
 
 struct FriendListViewModel:FriendListModeling{
-    var isRunning: Observable<Bool>
-    var cellModel: Observable<[FriendSectionModel]>
-    
+  
+    var isRunning: Observable<Bool>{
+       return activityIndicator.asObservable()
+    }
+    let activityIndicator = ActivityIndicator()
     let coordinator: SceneCoordinatorType
     let friendService:FriendService
     
-    init( coordinator: SceneCoordinatorType, friendService:FriendService) {
-          self.coordinator = coordinator
-          self.friendService = friendService
+    var cellModel: Observable<[FriendSectionModel]>{
         
-       
-        
-        let friendItems  = friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends")
+        return   friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends")
             .startWith(.success(payload: []))
             .observeOn(MainScheduler.instance)
-            .share(replay: 1)
-
-        let activityIndicator = ActivityIndicator()
-        isRunning = activityIndicator.asObservable()
-        
-        cellModel = friendItems.map{ result in
+            .share(replay: 1).map{ result in
             switch result{
             case .success(let friends):
                 if friends.count > 0{
                     return friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)}
                 }else {
-                   return [.empty]
+                    return [.empty]
                 }
                 
             case .failure(let error):
@@ -85,40 +78,22 @@ struct FriendListViewModel:FriendListModeling{
             }.flatMapLatest{ cell in return Observable.just([FriendSectionModel(model: 0, items: cell)])
                 
             }.trackActivity(activityIndicator)
-            
-        
-        
-//        
-//        cellModels2 = friendItems.filter{ frnd in
-//            return frnd.count > 0
-//        }.flatMapLatest{friends  in
-//                                return Observable.just(
-//                                    friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)})}
-//        
-//       
-//        
-//
-//        cellModels2 = friendItems.catchErrorJustReturn([]).flatMapLatest{ _ in
-//            return Observable.just([FriendTableViewCellType.error(message: "not connected")])
-//        }
-//        
-//        cellModels2 =  friendItems.ifEmpty(default: [])
-      //      .flatMapLatest{ _  in  return Observable.just([.empty])}
-//        .flatMapLatest{friends  in
-//                    return Observable.just(
-//                        friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)})}
-     //   .ifEmpty(switchTo: Observable.just([FriendTableViewCellType.empty]))
-//        .catchError{ error in
-//            return Observable.just([FriendTableViewCellType.error(message: error.localizedDescription)])
-//        }
-        
-      
-        
-//                cellModels = friendItems.map{ friendArray  in
-//                        friendArray.map{ $0 as FriendCellViewModel}
-//                   }
         
     }
+    
+    
+    
+    init( coordinator: SceneCoordinatorType, friendService:FriendService) {
+          self.coordinator = coordinator
+          self.friendService = friendService
 
+    }
 
+     func onCreateFriend() -> CocoaAction {
+        return CocoaAction{ _ in
+                        let editModel = EditFriendViewModel(coordinator: self.coordinator, friendService: self.friendService)
+            let editScene = Scene.editFriend(editModel)
+            return  self.coordinator.transition(to: editScene, type: .push)
+        }
+    }
 }
