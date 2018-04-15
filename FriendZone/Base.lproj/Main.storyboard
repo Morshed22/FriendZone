@@ -73,8 +73,11 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="gWU-rU-7cb"/>
+                    <navigationItem key="navigationItem" id="gWU-rU-7cb">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="sxh-68-mH4"/>
+                    </navigationItem>
                     <connections>
+                        <outlet property="addFriendBtn" destination="sxh-68-mH4" id="w2i-Bu-YN5"/>
                         <outlet property="tableView" destination="IAh-mv-aOH" id="Psa-vx-3td"/>
                     </connections>
                 </viewController>
@@ -171,7 +174,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zup-DA-nnw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1950" y="-105"/>
+            <point key="canvasLocation" x="1486" y="-109"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ldf-PJ-HxF">

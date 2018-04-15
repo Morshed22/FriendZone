@@ -57,43 +57,59 @@ struct FriendListViewModel:FriendListModeling{
     let activityIndicator = ActivityIndicator()
     let coordinator: SceneCoordinatorType
     let friendService:FriendService
+    private let subject = BehaviorSubject<[FriendSectionModel]>(value:[FriendSectionModel(model: 0, items: [.empty])])
     
     var cellModel: Observable<[FriendSectionModel]>{
-        
-        return   friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends")
-            .startWith(.success(payload: []))
-            .observeOn(MainScheduler.instance)
-            .share(replay: 1).map{ result in
-            switch result{
-            case .success(let friends):
-                if friends.count > 0{
-                    return friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)}
-                }else {
-                    return [.empty]
-                }
-                
-            case .failure(let error):
-                return [FriendTableViewCellType.error(message: error.description)]
-            }
-            }.flatMapLatest{ cell in return Observable.just([FriendSectionModel(model: 0, items: cell)])
-                
-            }.trackActivity(activityIndicator)
-        
+        return  self.getFriendList().flatMapLatest{ _  in
+            self.subject.asObservable()
+        }
     }
-    
-    
-    
+
     init( coordinator: SceneCoordinatorType, friendService:FriendService) {
           self.coordinator = coordinator
           self.friendService = friendService
 
     }
 
-     func onCreateFriend() -> CocoaAction {
+   private func getFriendList() -> Observable<Void>{
+
+      return friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends")
+            .observeOn(MainScheduler.instance)
+            .trackActivity(activityIndicator)
+            .share(replay: 1).map{ result in
+            switch result{
+            case .success(let friends):
+                if friends.count > 0{
+                    let element = friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)}
+                    let sectionModel = [FriendSectionModel(model: 0, items: element)]
+                    self.subject.onNext(sectionModel)
+
+                }else {
+                    self.subject.onNext([FriendSectionModel(model: 0, items: [.empty])])
+                }
+
+            case .failure(let error):
+                let errorElement = [FriendTableViewCellType.error(message: error.description)]
+                self.subject.onNext([FriendSectionModel(model: 0, items: errorElement)])
+
+            }
+        }
+
+
+    }
+
+    
+    func onCreateFriend() -> CocoaAction {
         return CocoaAction{ _ in
-                        let editModel = EditFriendViewModel(coordinator: self.coordinator, friendService: self.friendService)
+            let editModel = EditFriendViewModel(coordinator: self.coordinator, friendService: self.friendService, navigate: self.updateData())
             let editScene = Scene.editFriend(editModel)
             return  self.coordinator.transition(to: editScene, type: .push)
+        }
+    }
+    
+  private func updateData()->CocoaAction{
+        return CocoaAction { _ in
+            return self.getFriendList()
         }
     }
 }

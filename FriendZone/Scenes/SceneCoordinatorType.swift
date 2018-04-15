@@ -28,7 +28,7 @@ protocol SceneCoordinatorType {
 
   /// transition to another scene
   @discardableResult
-    func transition(to scene: Scene, type: SceneTransitionType) -> Completable
+    func transition(to scene: Scene, type: SceneTransitionType) ->Observable<Void>
 
   /// pop scene from navigation stack or dismiss current modal
   @discardableResult

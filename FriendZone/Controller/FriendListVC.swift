@@ -28,7 +28,7 @@ class FriendListVC: UIViewController,BindableType {
     }
     
    func configureCell(){
-   
+
     dataSource = RxTableViewSectionedAnimatedDataSource<FriendSectionModel>(configureCell: {
         dataSource, tableView, indexPath, itemType in
         
@@ -65,7 +65,7 @@ class FriendListVC: UIViewController,BindableType {
     
     
     func bindViewModel(){
-        
+
         addFriendBtn.rx.action = viewModel.onCreateFriend()
  
         guard let dataSource = dataSource else {

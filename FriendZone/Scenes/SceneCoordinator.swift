@@ -25,6 +25,8 @@ import RxSwift
 import RxCocoa
 
 class SceneCoordinator: SceneCoordinatorType {
+    
+    
 
   fileprivate var window: UIWindow
   fileprivate var currentViewController: UIViewController
@@ -45,7 +47,7 @@ class SceneCoordinator: SceneCoordinatorType {
   }
 
   @discardableResult
-  func transition(to scene: Scene, type: SceneTransitionType) -> Completable {
+  func transition(to scene: Scene, type: SceneTransitionType) -> Observable<Void> {
     let subject = PublishSubject<Void>()
     let viewController = scene.viewController()
     switch type {
@@ -74,7 +76,7 @@ class SceneCoordinator: SceneCoordinatorType {
     }
     return subject.asObservable()
       .take(1)
-      .ignoreElements()
+      
   }
 
   @discardableResult

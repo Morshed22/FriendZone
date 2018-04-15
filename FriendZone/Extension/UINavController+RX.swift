@@ -10,42 +10,24 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class RxNavigationControllerDelegateProxy: DelegateProxy<AnyObject, Any>, DelegateProxyType, UINavigationControllerDelegate {
+
+/// For more information take a look at `DelegateProxyType`.
+open class RxNavigationControllerDelegateProxy
+    : DelegateProxy<UINavigationController, UINavigationControllerDelegate>
+    , DelegateProxyType
+, UINavigationControllerDelegate {
     
-    static func registerKnownImplementations() {
-        
+    /// Typed parent object.
+    public weak private(set) var navigationController: UINavigationController?
+    
+    /// - parameter navigationController: Parent object for delegate proxy.
+    public init(navigationController: ParentObject) {
+        self.navigationController = navigationController
+        super.init(parentObject: navigationController, delegateProxy: RxNavigationControllerDelegateProxy.self)
     }
     
-    static func currentDelegate(for object: AnyObject) -> Any? {
-        guard let navigationController = object as? UINavigationController else {
-            fatalError()
-        }
-        return navigationController.delegate
-    }
-    
-    static func setCurrentDelegate(_ delegate: Any?, to object: AnyObject) {
- 
-        guard let navigationController = object as? UINavigationController else {
-            fatalError()
-        }
-        if delegate == nil {
-            navigationController.delegate = nil
-        } else {
-            guard let delegate = delegate as? UINavigationControllerDelegate else {
-                fatalError()
-            }
-            navigationController.delegate = delegate
-        }
+    // Register known implementations
+    public static func registerKnownImplementations() {
+        self.register { RxNavigationControllerDelegateProxy(navigationController: $0) }
     }
 }
-
-extension Reactive where Base: UINavigationController {
-    /**
-     Reactive wrapper for `delegate`.
-     For more information take a look at `DelegateProxyType` protocol documentation.
-     */
-    public var delegate: DelegateProxy<AnyObject, Any> {
-        return RxNavigationControllerDelegateProxy.proxy(for: base)
-    }
-}
-

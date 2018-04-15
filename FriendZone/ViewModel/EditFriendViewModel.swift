@@ -21,14 +21,14 @@ protocol FriendViewModel {
     //    var showLoadingHud: Bindable<Bool> { get }
     //
     //    var updateSubmitButtonState: ((Bool) -> ())? { get set }
-    //    var navigateBack: (() -> ())?  { get set }
+    var navigateBack:CocoaAction { get set }
     var onShowError: ((_ alert: SingleButtonAlert) -> Void)?  { get set }
     
     
 }
 class EditFriendViewModel:FriendViewModel{
-    
-    
+    var navigateBack: CocoaAction
+   
     var firstname = BehaviorSubject<String>(value: "")
     var lastname = BehaviorSubject<String>(value: "")
     var phonenumber = BehaviorSubject<String>(value: "")
@@ -45,8 +45,9 @@ class EditFriendViewModel:FriendViewModel{
     
     let disposeBag = DisposeBag()
     
-    init( coordinator: SceneCoordinatorType, friendService:FriendService) {
+    init( coordinator: SceneCoordinatorType, friendService:FriendService, navigate:CocoaAction) {
         
+        self.navigateBack = navigate
         let allInputs = Observable.combineLatest(self.firstname.asObservable(), self.lastname.asObservable(), self.phonenumber.asObservable())
         { (firstname, lastname,phonenumber) in return (firstname, lastname,phonenumber)}
         
@@ -74,42 +75,19 @@ class EditFriendViewModel:FriendViewModel{
         
         
         
-        
-        onUpdate.executionObservables.map {  item in
-            item.do(onNext: { json in
-                print(json)
-            }, onError: { err in
-                print(err)
-            })
-            }.subscribe()
-            .disposed(by: disposeBag)
-        
-        onUpdate.executionObservables.subscribe(onNext: { item in
-            item.subscribe(onNext: { josn in
-                // coordinator.pop()
-                // print(josn)
+        onUpdate.executionObservables.map { items  in
+            items.subscribe(onNext: { [weak self] josn in
+                 print(josn)
+                self?.navigateBack.execute(())
+                 coordinator.pop()
             }, onError: { err in
                 let alert = SingleButtonAlert(title: "Error", message: err.localizedDescription, action: AlertAction(buttonTitle: "OK", handler: CocoaAction{ _ in return Observable.empty()
                 }))
                 self.onShowError!(alert)
             }).disposed(by: self.disposeBag)
-            
-        }).disposed(by: disposeBag)
+        }.subscribe().disposed(by: disposeBag)
         
-        
-        
-        
-        
-        
-        //        onUpdate.executionObservables
-        //       .take(1).debug()
-        //            .subscribe(onNext: { json in json.subscribe(onNext: { value in
-        //                print(value)
-        //            }).disposed(by: self.disposeBag)
-        //
-        //         // coordinator.pop()
-        //        })
-        //        .disposed(by: disposeBag)
+
         
     }
     
