@@ -15,6 +15,7 @@ import PKHUD
 
 class FriendListVC: UIViewController,BindableType {
    
+    @IBOutlet weak var addFriendBtn: UIBarButtonItem!
     @IBOutlet weak var tableView: UITableView!
     
     var viewModel: FriendListViewModel!
@@ -64,6 +65,8 @@ class FriendListVC: UIViewController,BindableType {
     
     
     func bindViewModel(){
+        
+        addFriendBtn.rx.action = viewModel.onCreateFriend()
  
         guard let dataSource = dataSource else {
             return
@@ -71,13 +74,14 @@ class FriendListVC: UIViewController,BindableType {
         
         viewModel.cellModel
             .bind(to: tableView.rx.items(dataSource: dataSource))
+            
             .disposed(by: rx.disposeBag)
         
         
-        viewModel.isRunning.subscribe(onNext: {  status in
+        viewModel.isRunning.subscribe(onNext: { [weak self] status in
             PKHUD.sharedHUD.contentView = PKHUDSystemActivityIndicatorView()
-              status ? PKHUD.sharedHUD.show(onView: self.view) : PKHUD.sharedHUD.hide()
-            
+            status ? PKHUD.sharedHUD.show(onView: self?.view) : PKHUD.sharedHUD.hide()
+            self?.addFriendBtn.isEnabled = !status
         }).disposed(by: rx.disposeBag)
         
 
