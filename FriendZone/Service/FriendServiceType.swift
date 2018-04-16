@@ -19,6 +19,9 @@ protocol FriendServiceType {
     @discardableResult
     func getFriendList(url:String) -> Observable<Result<[Friend], APIError>>
     
+    @discardableResult
+    func deleteFriend(id:Int)-> Observable<Result<Void, APIError>>
+    
 //    
 //    @discardableResult
 //    func delete(task: Friend) -> Observable<Void>

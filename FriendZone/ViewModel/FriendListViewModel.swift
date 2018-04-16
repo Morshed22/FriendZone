@@ -17,6 +17,7 @@ typealias FriendSectionModel = AnimatableSectionModel<Int, FriendTableViewCellTy
 protocol FriendListModeling{
     var cellModel: Observable<[FriendSectionModel]> { get }
     var isRunning: Observable<Bool>{  get }
+    var onShowError:PublishSubject<SingleButtonAlert>{ get}
 }
 
 enum FriendTableViewCellType{
@@ -50,7 +51,7 @@ extension FriendTableViewCellType:IdentifiableType,Equatable{
 
 
 struct FriendListViewModel:FriendListModeling{
-  
+    var onShowError =  PublishSubject<SingleButtonAlert>()
     var isRunning: Observable<Bool>{
        return activityIndicator.asObservable()
     }
@@ -68,17 +69,18 @@ struct FriendListViewModel:FriendListModeling{
     init( coordinator: SceneCoordinatorType, friendService:FriendService) {
           self.coordinator = coordinator
           self.friendService = friendService
-
+ 
     }
 
    private func getFriendList() -> Observable<Void>{
 
-      return friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends")
+      return friendService.getFriendList(url:"http://friendservice.herokuapp.com/listFriends").debug()
             .observeOn(MainScheduler.instance)
             .trackActivity(activityIndicator)
-            .share(replay: 1).map{ result in
-            switch result{
-            case .success(let friends):
+            .share(replay: 1)
+            .map{ result in
+        switch result{
+             case .success(let friends):
                 if friends.count > 0{
                     let element = friends.compactMap{FriendTableViewCellType.normal(cellViewModel: $0 as FriendCellViewModel)}
                     let sectionModel = [FriendSectionModel(model: 0, items: element)]
@@ -93,13 +95,44 @@ struct FriendListViewModel:FriendListModeling{
                 self.subject.onNext([FriendSectionModel(model: 0, items: errorElement)])
 
             }
-        }
+            }
 
 
     }
 
+  
     
-    func onCreateFriend() -> CocoaAction {
+lazy var deleteFriend:Action<Int, Void> = { (this) in
+    return  Action{  index in
+        
+        let value = try! this.subject.value()
+        let friensCells = value.flatMap{$0.items}
+
+        switch friensCells[index] {
+            case .normal(let cellViewModel):
+               return this.friendService.deleteFriend(id:cellViewModel.friendItem.id)
+                .observeOn(MainScheduler.instance)
+                   .share(replay: 1).debug()
+                  .map{ result in
+                    switch result {
+                    case .success:
+                        this.updateData().execute(())
+                    case .failure(let error):
+                        let alert = SingleButtonAlert(title: "Error", message: error.description, action: AlertAction(buttonTitle: "OK", handler: CocoaAction{ _ in return Observable.empty()}))
+                        this.onShowError.onNext(alert)
+                    }
+            }
+         case .error,.empty :
+            return .empty()
+        }
+    }
+}(self)
+
+
+    
+    
+    
+ func onCreateFriend() -> CocoaAction {
         return CocoaAction{ _ in
             let editModel = EditFriendViewModel(coordinator: self.coordinator, friendService: self.friendService, navigate: self.updateData())
             let editScene = Scene.editFriend(editModel)

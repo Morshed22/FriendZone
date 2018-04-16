@@ -76,7 +76,26 @@ struct FriendService:FriendServiceType {
     }
     
    
-    
+    func deleteFriend(id: Int) -> Observable<Result<Void, APIError>> {
+        return Observable.create() { observer in
+            
+            let request = Alamofire
+                .request("https://friendservice.herokuapp.com/editFriend/\(id)", method: .delete, parameters: nil, encoding: JSONEncoding.default)
+                .validate(statusCode: 200 ..< 300)
+                .responseJSON { response in
+                    switch response.result {
+                    case .success:
+                        observer.onNext(.success(payload: ()))
+                    case .failure(let error):
+                        observer.onNext(.failure(APIError(error: error)))
+                    }
+                    observer.onCompleted()
+            }
+            return Disposables.create(with: {
+                request.cancel()
+            })
+        }
+    }
     
     
     

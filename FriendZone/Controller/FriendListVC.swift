@@ -24,7 +24,7 @@ class FriendListVC: UIViewController,BindableType {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCell()
-        // Do any additional setup after loading the view, typically from a nib.
+        setEditing(true, animated: false)
     }
     
    func configureCell(){
@@ -53,6 +53,19 @@ class FriendListVC: UIViewController,BindableType {
         }
     })
 
+    dataSource?.canEditRowAtIndexPath = { dataSource, indexpath in
+        
+        let cellModel = dataSource.sectionModels.flatMap{$0.items}
+        let index = indexpath.row
+        
+        switch cellModel[index] {
+        case .normal:
+            return true
+        case .error,.empty:
+            return false
+       
+    }
+  }
 }
     
 
@@ -84,9 +97,19 @@ class FriendListVC: UIViewController,BindableType {
             self?.addFriendBtn.isEnabled = !status
         }).disposed(by: rx.disposeBag)
         
-
+        
+        tableView.rx.itemDeleted
+            .map { $0.row}
+            .subscribe(viewModel.deleteFriend.inputs)
+            .disposed(by: rx.disposeBag)
+        
+        
+        viewModel.onShowError.subscribe { [weak self]  alert in
+            self?.presentSingleButtonDialog(alert: alert.element!)
+        }.disposed(by: rx.disposeBag)
+        
 }
 
 
 }
-
+extension FriendListVC: SingleButtonDialogPresenter { }

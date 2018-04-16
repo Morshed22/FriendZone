@@ -7,9 +7,9 @@
 //
 
 import UIKit
+import RxSwift
 
 class FriendCell: UITableViewCell {
-    
     
 @IBOutlet weak var friendName: UILabel!
     
@@ -29,7 +29,8 @@ class FriendCell: UITableViewCell {
     }
     override func prepareForReuse() {
         viewModel = nil
-        
+       
+
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {

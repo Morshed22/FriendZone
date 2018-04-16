@@ -82,7 +82,7 @@ class EditFriendVC: UIViewController,BindableType {
         .disposed(by: rx.disposeBag)
 
        submitBtn.rx.tap
-        .throttle(3, latest: false, scheduler: MainScheduler.instance)
+        .throttle(0.3, latest: false, scheduler: MainScheduler.instance)
         .withLatestFrom(viewModel.params)
         .subscribe(viewModel.onUpdate.inputs)
         .disposed(by: rx.disposeBag)
