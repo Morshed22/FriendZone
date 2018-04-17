@@ -44,7 +44,8 @@ struct FriendService:FriendServiceType {
     }
 
     func getFriendList(url: String) -> Observable<Result<[Friend], APIError>> {
-         return Observable.create() { observer in
+    return Observable.create() { observer in
+        
         let request =  Alamofire.request(url)
             .validate(statusCode: 200 ..< 300)
             .responseJSON(queue: self.queue) { response in
@@ -55,16 +56,13 @@ struct FriendService:FriendServiceType {
                         return
                     }
                     let friendArray = jsonArray.compactMap{Friend(json: $0)}
-                    
                     observer.onNext(.success(payload: friendArray))
-                    
-                   // observer.onNext(friendArray)
-                   // observer.onCompleted()
+                    observer.onCompleted()
                 case .failure(let error):
-                  //observer.onError(APIError(error: error))
                    observer.onNext(.failure(APIError(error: error)))
+                    observer.onCompleted()
                 }
-            observer.onCompleted()
+            
             }
             return Disposables.create(with: {
                 request.cancel()

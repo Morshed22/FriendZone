@@ -51,6 +51,7 @@ extension FriendTableViewCellType:IdentifiableType,Equatable{
 
 
 struct FriendListViewModel:FriendListModeling{
+    let disposeBag = DisposeBag()
     var onShowError =  PublishSubject<SingleButtonAlert>()
     var isRunning: Observable<Bool>{
        return activityIndicator.asObservable()
@@ -103,6 +104,7 @@ struct FriendListViewModel:FriendListModeling{
   
     
 lazy var deleteFriend:Action<Int, Void> = { (this) in
+   
     return  Action{  index in
         
         let value = try! this.subject.value()
@@ -116,7 +118,7 @@ lazy var deleteFriend:Action<Int, Void> = { (this) in
                   .map{ result in
                     switch result {
                     case .success:
-                        this.updateData().execute(())
+                        this.getFriendList().subscribe().disposed(by: this.disposeBag)
                     case .failure(let error):
                         let alert = SingleButtonAlert(title: "Error", message: error.description, action: AlertAction(buttonTitle: "OK", handler: CocoaAction{ _ in return Observable.empty()}))
                         this.onShowError.onNext(alert)

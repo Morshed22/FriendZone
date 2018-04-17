@@ -10,7 +10,8 @@ import UIKit
 import RxSwift
 
 class FriendCell: UITableViewCell {
-    
+    var disposeBag = DisposeBag()
+
 @IBOutlet weak var friendName: UILabel!
     
 @IBOutlet weak var phoneNumber: UILabel!
@@ -28,8 +29,9 @@ class FriendCell: UITableViewCell {
         // Initialization code
     }
     override func prepareForReuse() {
-        viewModel = nil
-       
+        super.prepareForReuse()
+        //viewModel = nil
+       disposeBag = DisposeBag()
 
     }
     
