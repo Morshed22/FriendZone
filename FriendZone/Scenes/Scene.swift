@@ -24,5 +24,5 @@ import Foundation
 
 enum Scene {
   case friendList(FriendListViewModel)
-  case editFriend(EditFriendViewModel)
+  case editFriend(FriendViewModel)
 }

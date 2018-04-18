@@ -136,7 +136,7 @@ lazy var deleteFriend:Action<Int, Void> = { (this) in
     
  func onCreateFriend() -> CocoaAction {
         return CocoaAction{ _ in
-            let editModel = EditFriendViewModel(coordinator: self.coordinator, friendService: self.friendService, navigate: self.updateData())
+            let editModel = AddFriendViewModel(coordinator: self.coordinator, friendService: self.friendService, navigate: self.updateData())
             let editScene = Scene.editFriend(editModel)
             return  self.coordinator.transition(to: editScene, type: .push)
         }

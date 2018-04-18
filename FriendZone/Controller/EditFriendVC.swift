@@ -23,7 +23,7 @@ class EditFriendVC: UIViewController,BindableType {
     
     @IBOutlet weak var submitBtn: UIButton!
     
-    var viewModel: EditFriendViewModel!
+    var viewModel: FriendViewModel!
     
     
     override func viewDidLoad() {
@@ -73,17 +73,16 @@ class EditFriendVC: UIViewController,BindableType {
             status ? PKHUD.sharedHUD.show() : PKHUD.sharedHUD.hide()
         }).disposed(by: rx.disposeBag)
         
-        viewModel.onShowError = { [weak self] alert in
+        viewModel.onShowError.subscribe(onNext: { [weak self] alert in
             self?.presentSingleButtonDialog(alert: alert)
-        }
-        
+        }).disposed(by: rx.disposeBag)
         
       viewModel.isValid.bind(to: submitBtn.rx.isEnabled)
         .disposed(by: rx.disposeBag)
 
        submitBtn.rx.tap
         .throttle(0.3, latest: false, scheduler: MainScheduler.instance)
-        .withLatestFrom(viewModel.params)
+        .withLatestFrom(viewModel.inputParameter)
         .subscribe(viewModel.onUpdate.inputs)
         .disposed(by: rx.disposeBag)
 

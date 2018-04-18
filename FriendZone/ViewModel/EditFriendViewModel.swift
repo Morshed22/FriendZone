@@ -18,42 +18,43 @@ protocol FriendViewModel {
     var firstname :  BehaviorSubject<String> {get set}
     var lastname :BehaviorSubject<String> {get set}
     var phonenumber : BehaviorSubject<String>{get set}
-    //    var showLoadingHud: Bindable<Bool> { get }
-    //
-    //    var updateSubmitButtonState: ((Bool) -> ())? { get set }
-    var navigateBack:CocoaAction { get set }
-    var onShowError: ((_ alert: SingleButtonAlert) -> Void)?  { get set }
+    var isRunning:Observable<Bool>{get}
+    var inputParameter:Observable<[String:Any]>{get}
+    var onShowError: Observable<SingleButtonAlert>{get}
+    var onUpdate: Action<[String:Any], JSON>{get}
+    var isValid:Observable<Bool>{get}
     
     
 }
-class EditFriendViewModel:FriendViewModel{
-    var navigateBack: CocoaAction
-   
-    var firstname = BehaviorSubject<String>(value: "")
-    var lastname = BehaviorSubject<String>(value: "")
-    var phonenumber = BehaviorSubject<String>(value: "")
+struct AddFriendViewModel:FriendViewModel{
+    
+    
+    
+    
+    var firstname = BehaviorSubject<String>(value:"")
+    var lastname = BehaviorSubject<String>(value:"")
+    var phonenumber = BehaviorSubject<String>(value:"")
+    var inputParameter: Observable<[String : Any]>
+    var onShowError: Observable<SingleButtonAlert>
     
     var title: String {
         return "Add Friend"
     }
-    
-    var onShowError: ((SingleButtonAlert) -> Void)?
+    var isValid: Observable<Bool>
     var isRunning: Observable<Bool>
-    let isValid: Observable<Bool>
-    let params: Observable<[String:Any]>
-    let onUpdate: Action<[String:Any], JSON>
+    var onUpdate: Action<[String:Any], JSON>
     
-    let disposeBag = DisposeBag()
+    
     
     init( coordinator: SceneCoordinatorType, friendService:FriendService, navigate:CocoaAction) {
+        let disposeBag = DisposeBag()
         
-        self.navigateBack = navigate
         let allInputs = Observable.combineLatest(self.firstname.asObservable(), self.lastname.asObservable(), self.phonenumber.asObservable())
         { (firstname, lastname,phonenumber) in return (firstname, lastname,phonenumber)}
         
         
         
-        params = allInputs.map{ (firstname, lastname,phonenumber) in
+        inputParameter = allInputs.map{ (firstname, lastname,phonenumber) in
             return ["firstname":firstname,
                     "lastname":lastname,
                     "phonenumber":phonenumber]
@@ -66,7 +67,8 @@ class EditFriendViewModel:FriendViewModel{
         let activityIndicator = ActivityIndicator()
         isRunning = activityIndicator.asObservable()
         
-        
+        let getError = PublishSubject<SingleButtonAlert>()
+        onShowError = getError.asObservable()
         
         onUpdate = Action{ input in
             return friendService.createFriend(url: "https://friendservice.herokuapp.com/addFriend", params: input ).trackActivity(activityIndicator)
@@ -76,21 +78,18 @@ class EditFriendViewModel:FriendViewModel{
         
         
         onUpdate.executionObservables.map { items  in
-            items.subscribe(onNext: { [weak self] josn in
+            items.subscribe(onNext: {  josn in
                  print(josn)
-                self?.navigateBack.execute(())
+                navigate.execute(())
                  coordinator.pop()
             }, onError: { err in
-                let alert = SingleButtonAlert(title: "Error", message: err.localizedDescription, action: AlertAction(buttonTitle: "OK", handler: CocoaAction{ _ in return Observable.empty()
+                let error = APIError(error: err)
+                let alert = SingleButtonAlert(title: "Error", message: error.description, action: AlertAction(buttonTitle: "OK", handler: CocoaAction{ _ in return Observable.empty()
                 }))
-                self.onShowError!(alert)
-            }).disposed(by: self.disposeBag)
+                getError.onNext(alert)
+               
+            }).disposed(by: disposeBag)
         }.subscribe().disposed(by: disposeBag)
-        
 
-        
     }
-    
-    
-    
 }
