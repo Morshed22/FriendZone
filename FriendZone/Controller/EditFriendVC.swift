@@ -9,9 +9,11 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import NSObject_Rx
+import PKHUD
 
 class EditFriendVC: UIViewController,BindableType {
-      let disposeBag = DisposeBag()
+     // let disposeBag = DisposeBag()
     
     @IBOutlet weak var firstNameTextField: UITextField!
 
@@ -20,58 +22,22 @@ class EditFriendVC: UIViewController,BindableType {
     @IBOutlet weak var phoneNumberTextField: UITextField!
     
     @IBOutlet weak var submitBtn: UIButton!
-    var viewModel: EditFriendViewModel!
+    
+    var viewModel: FriendViewModel!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        configureAllTextField()
+        setupNavigationBackAction()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    func configureAllTextField(){
-       
-        
-//        let valids = [firstNameTextField, lastNameTextField, phoneNumberTextField].map {field in
-//            field?.rx.text.map({ _ in return (field?.text ?? "").count > 0 })
-//        }
-//
-//       let everythingValid = Observable.combineLatest(valids)
-//          { iterator ->Bool  in
-//            iterator.reduce(true, { return $0 && $1 })
-//
-//        }
-        
-        let firstNameValid: Observable<Bool> = firstNameTextField.rx.text.orEmpty
-            .map{ ($0).count > 0}
-            .share(replay: 1)
 
-        let secondNameValid: Observable<Bool> = lastNameTextField.rx.text.orEmpty
-            .map{ $0.count > 0
-        }.share(replay: 1)
-
-        let phoneNumberValid: Observable<Bool> = phoneNumberTextField.rx.text.orEmpty
-            .map{ $0.count > 0
-        }.share(replay: 1)
-
-        let everythingValid = Observable.combineLatest(firstNameValid, secondNameValid, phoneNumberValid) { $0 && $1 && $2}
-            .share(replay: 1)
-        
-
-        everythingValid
-            .bind(to: submitBtn.rx.isEnabled)
-            .disposed(by: disposeBag)
-        
-    }
-    
-    
-    
     /*
     // MARK: - Navigation
 
@@ -81,8 +47,65 @@ class EditFriendVC: UIViewController,BindableType {
         // Pass the selected object to the new view controller.
     }
     */
+    func setupNavigationBackAction() {
+        
+        self.navigationItem.hidesBackButton = true
+        var customBackButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: .done, target: nil, action: nil)
+        customBackButton.rx.action = viewModel.goBack
+        self.navigationItem.leftBarButtonItem = customBackButton
+    }
+
+    
 
     func bindViewModel() {
+        viewModel.firstname.asObservable()
+            .bind(to: firstNameTextField.rx.text)
+            .disposed(by: rx.disposeBag)
         
+        viewModel.lastname.asObservable()
+            .bind(to: lastNameTextField.rx.text)
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.phonenumber.asObservable()
+            .bind(to: phoneNumberTextField.rx.text)
+            .disposed(by: rx.disposeBag)
+        
+        firstNameTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.firstname)
+            .disposed(by: rx.disposeBag)
+
+        lastNameTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.lastname)
+            .disposed(by: rx.disposeBag)
+
+
+        phoneNumberTextField.rx.text
+            .orEmpty
+            .bind(to: viewModel.phonenumber)
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.isRunning.subscribe(onNext: { status in
+            PKHUD.sharedHUD.contentView = PKHUDSystemActivityIndicatorView()
+            status ? PKHUD.sharedHUD.show() : PKHUD.sharedHUD.hide()
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.onShowError.subscribe(onNext: { [weak self] alert in
+            self?.presentSingleButtonDialog(alert: alert)
+        }).disposed(by: rx.disposeBag)
+        
+      viewModel.isValid.bind(to: submitBtn.rx.isEnabled)
+        .disposed(by: rx.disposeBag)
+
+       submitBtn.rx.tap
+        .throttle(0.3, latest: false, scheduler: MainScheduler.instance)
+        .withLatestFrom(viewModel.inputParameter)
+        .subscribe(viewModel.onUpdate.inputs)
+        .disposed(by: rx.disposeBag)
+
     }
+    
+  
 }
+extension EditFriendVC: SingleButtonDialogPresenter { }

@@ -25,13 +25,15 @@ import RxSwift
 import RxCocoa
 
 class SceneCoordinator: SceneCoordinatorType {
-
+   
   fileprivate var window: UIWindow
   fileprivate var currentViewController: UIViewController
 
   required init(window: UIWindow) {
     self.window = window
-    currentViewController = window.rootViewController!
+    currentViewController = UIViewController()
+    self.window.makeKey()
+    self.window.makeKeyAndVisible()
   }
 
   static func actualViewController(for viewController: UIViewController) -> UIViewController {
@@ -43,7 +45,7 @@ class SceneCoordinator: SceneCoordinatorType {
   }
 
   @discardableResult
-  func transition(to scene: Scene, type: SceneTransitionType) -> Completable {
+  func transition(to scene: Scene, type: SceneTransitionType) -> Observable<Void> {
     let subject = PublishSubject<Void>()
     let viewController = scene.viewController()
     switch type {
@@ -72,11 +74,11 @@ class SceneCoordinator: SceneCoordinatorType {
     }
     return subject.asObservable()
       .take(1)
-      .ignoreElements()
+      
   }
 
   @discardableResult
-  func pop(animated: Bool) -> Completable{
+  func pop(animated: Bool) -> Observable<Void>{
     let subject = PublishSubject<Void>()
     if let presenter = currentViewController.presentingViewController {
       // dismiss a modal controller
@@ -98,6 +100,6 @@ class SceneCoordinator: SceneCoordinatorType {
     } else {
       fatalError("Not a modal, no navigation controller: can't navigate back from \(currentViewController)")
     }
-    return subject.asObservable().take(1).ignoreElements()
+    return subject.asObservable().take(1)
   }
 }

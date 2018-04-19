@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="mdP-1N-e0Z">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hff-RS-gVe">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -15,7 +15,7 @@
         <!--Friend ListVC-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="FriendListVC" id="BYZ-38-t0r" customClass="FriendListVC" customModule="FriendZone" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="FriendListVC" customModule="FriendZone" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -24,7 +24,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="friendCell" id="RiI-V1-U6K" customClass="FriendCell" customModule="FriendZone" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FriendCell" id="RiI-V1-U6K" customClass="FriendCell" customModule="FriendZone" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RiI-V1-U6K" id="hL9-c3-h0h">
@@ -57,7 +57,7 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <outlet property="friendName" destination="9XA-kM-hPx" id="xUH-zd-Wv1"/>
+                                            <outlet property="friendName" destination="PF3-zs-oK0" id="1bP-Rp-Xak"/>
                                             <outlet property="phoneNumber" destination="9XA-kM-hPx" id="5bh-fv-o6I"/>
                                         </connections>
                                     </tableViewCell>
@@ -73,7 +73,13 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="gWU-rU-7cb"/>
+                    <navigationItem key="navigationItem" id="gWU-rU-7cb">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="sxh-68-mH4"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="addFriendBtn" destination="sxh-68-mH4" id="w2i-Bu-YN5"/>
+                        <outlet property="tableView" destination="IAh-mv-aOH" id="Psa-vx-3td"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -158,6 +164,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="tiz-zE-LcD"/>
                     </view>
+                    <navigationItem key="navigationItem" id="W8K-h6-t0R"/>
                     <connections>
                         <outlet property="firstNameTextField" destination="Qyt-fK-859" id="tV7-dc-PS0"/>
                         <outlet property="lastNameTextField" destination="NHo-ey-oji" id="7Qp-qL-xzd"/>
@@ -167,12 +174,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zup-DA-nnw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1207" y="-109"/>
+            <point key="canvasLocation" x="1486" y="-109"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="ldf-PJ-HxF">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hff-RS-gVe" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="FriendListVC" automaticallyAdjustsScrollViewInsets="NO" id="hff-RS-gVe" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="LHK-7d-2sq">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
