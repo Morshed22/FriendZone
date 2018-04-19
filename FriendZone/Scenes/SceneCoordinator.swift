@@ -25,9 +25,7 @@ import RxSwift
 import RxCocoa
 
 class SceneCoordinator: SceneCoordinatorType {
-    
-    
-
+   
   fileprivate var window: UIWindow
   fileprivate var currentViewController: UIViewController
 
@@ -80,7 +78,7 @@ class SceneCoordinator: SceneCoordinatorType {
   }
 
   @discardableResult
-  func pop(animated: Bool) -> Completable{
+  func pop(animated: Bool) -> Observable<Void>{
     let subject = PublishSubject<Void>()
     if let presenter = currentViewController.presentingViewController {
       // dismiss a modal controller
@@ -102,6 +100,6 @@ class SceneCoordinator: SceneCoordinatorType {
     } else {
       fatalError("Not a modal, no navigation controller: can't navigate back from \(currentViewController)")
     }
-    return subject.asObservable().take(1).ignoreElements()
+    return subject.asObservable().take(1)
   }
 }

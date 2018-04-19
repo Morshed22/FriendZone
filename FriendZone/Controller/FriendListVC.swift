@@ -85,9 +85,8 @@ class FriendListVC: UIViewController,BindableType {
             return
         }
         
-        viewModel.cellModel
+        viewModel.cellModel.debug()
             .bind(to: tableView.rx.items(dataSource: dataSource))
-            
             .disposed(by: rx.disposeBag)
         
         
@@ -97,6 +96,10 @@ class FriendListVC: UIViewController,BindableType {
             self?.addFriendBtn.isEnabled = !status
         }).disposed(by: rx.disposeBag)
         
+        tableView.rx.itemSelected
+            .map{ $0.row}
+            .subscribe(viewModel.updateFriend.inputs)
+            .disposed(by: rx.disposeBag)
         
         tableView.rx.itemDeleted
             .map { $0.row}

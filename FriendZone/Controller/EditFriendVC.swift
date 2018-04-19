@@ -30,17 +30,14 @@ class EditFriendVC: UIViewController,BindableType {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        
+        setupNavigationBackAction()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
- 
-    
-    
-    
+
     /*
     // MARK: - Navigation
 
@@ -50,19 +47,40 @@ class EditFriendVC: UIViewController,BindableType {
         // Pass the selected object to the new view controller.
     }
     */
+    func setupNavigationBackAction() {
+        
+        self.navigationItem.hidesBackButton = true
+        var customBackButton = UIBarButtonItem(image: #imageLiteral(resourceName: "back_icon"), style: .done, target: nil, action: nil)
+        customBackButton.rx.action = viewModel.goBack
+        self.navigationItem.leftBarButtonItem = customBackButton
+    }
+
+    
 
     func bindViewModel() {
+        viewModel.firstname.asObservable()
+            .bind(to: firstNameTextField.rx.text)
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.lastname.asObservable()
+            .bind(to: lastNameTextField.rx.text)
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.phonenumber.asObservable()
+            .bind(to: phoneNumberTextField.rx.text)
+            .disposed(by: rx.disposeBag)
+        
         firstNameTextField.rx.text
             .orEmpty
             .bind(to: viewModel.firstname)
             .disposed(by: rx.disposeBag)
-        
+
         lastNameTextField.rx.text
             .orEmpty
             .bind(to: viewModel.lastname)
             .disposed(by: rx.disposeBag)
-        
-        
+
+
         phoneNumberTextField.rx.text
             .orEmpty
             .bind(to: viewModel.phonenumber)

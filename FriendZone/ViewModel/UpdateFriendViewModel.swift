@@ -1,34 +1,23 @@
 //
-//  EditFriendViewModel.swift
+//  UpdateFriendViewModel.swift
 //  FriendZone
 //
-//  Created by Morshed Alam on 3/3/18.
+//  Created by Morshed Alam on 19/4/18.
 //  Copyright © 2018 GG. All rights reserved.
 //
 
-import Foundation
 import RxSwift
+import RxCocoa
 import Action
 import SwiftyJSON
 
+struct UpdateFriendViewModel:FriendViewModel{
+    
+    
+    
+   
+    
 
-protocol FriendViewModel {
-    
-    var title: String { get }
-    var firstname :  BehaviorSubject<String> {get set}
-    var lastname :BehaviorSubject<String> {get set}
-    var phonenumber : BehaviorSubject<String>{get set}
-    var isRunning:Observable<Bool>{get}
-    var inputParameter:Observable<[String:Any]>{get}
-    var onShowError: Observable<SingleButtonAlert>{get}
-    var onUpdate: Action<[String:Any], JSON>{get}
-    var isValid:Observable<Bool>{get}
-    var goBack:CocoaAction{get}
-    
-    
-}
-struct AddFriendViewModel:FriendViewModel{
- 
     var firstname = BehaviorSubject<String>(value:"")
     var lastname = BehaviorSubject<String>(value:"")
     var phonenumber = BehaviorSubject<String>(value:"")
@@ -41,11 +30,15 @@ struct AddFriendViewModel:FriendViewModel{
     var isValid: Observable<Bool>
     var isRunning: Observable<Bool>
     var onUpdate: Action<[String:Any], JSON>
-    var goBack: CocoaAction
     
+     var goBack: CocoaAction
     
-    init( coordinator: SceneCoordinatorType, friendService:FriendService, navigate:CocoaAction) {
+    init(friend:Friend, coordinator: SceneCoordinatorType, friendService:FriendService, navigate:CocoaAction) {
         let disposeBag = DisposeBag()
+        
+        firstname.onNext(friend.firstname)
+        lastname.onNext(friend.lastname)
+        phonenumber.onNext(friend.phonenumber)
         
         let allInputs = Observable.combineLatest(self.firstname.asObservable(), self.lastname.asObservable(), self.phonenumber.asObservable())
         { (firstname, lastname,phonenumber) in return (firstname, lastname,phonenumber)}
@@ -68,30 +61,30 @@ struct AddFriendViewModel:FriendViewModel{
         let getError = PublishSubject<SingleButtonAlert>()
         onShowError = getError.asObservable()
         
-        
-        
         onUpdate = Action{ input in
-            return friendService.createFriend(url: "https://friendservice.herokuapp.com/addFriend", params: input ).trackActivity(activityIndicator)
-                .map{$0}.share()
+            return friendService.updateFriend(params: input, id: friend.id)
+                 .trackActivity(activityIndicator)
+                 .map{$0}.share()
         }
         
         goBack = CocoaAction{
              return coordinator.pop()
-            }
+        }
+        
         
         onUpdate.executionObservables.map { items  in
             items.subscribe(onNext: {  josn in
-                 print(josn)
+                print(josn)
                 navigate.execute(())
-                 coordinator.pop()
+                coordinator.pop()
             }, onError: { err in
                 let error = APIError(error: err)
                 let alert = SingleButtonAlert(title: "Error", message: error.description, action: AlertAction(buttonTitle: "OK", handler: CocoaAction{ _ in return Observable.empty()
                 }))
                 getError.onNext(alert)
-               
+                
             }).disposed(by: disposeBag)
-        }.subscribe().disposed(by: disposeBag)
-
+            }.subscribe().disposed(by: disposeBag)
+        
     }
 }

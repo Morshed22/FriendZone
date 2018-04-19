@@ -12,9 +12,8 @@ import Alamofire
 import SwiftyJSON
 
 struct FriendService:FriendServiceType {
-    
-    
    
+
     private let queue = DispatchQueue(label: "Friend.FriendService.Queue")
     
     init() {
@@ -95,6 +94,32 @@ struct FriendService:FriendServiceType {
         }
     }
     
+    func updateFriend(params: [String : Any], id: Int) -> Observable<JSON> {
+        
+        return Observable.create() { observer in
+            
+            let request =   Alamofire.request("https://friendservice.herokuapp.com/editFriend/\(id)", method:.patch, parameters: params, encoding: JSONEncoding.default, headers: nil)
+                .validate(statusCode: 200 ..< 300)
+                .responseJSON(completionHandler: { response in
+                
+                switch response.result{
+                case .success(let value):
+                    let json = JSON(value)
+                    observer.onNext(json)
+                    observer.onCompleted()
+                    
+                case .failure(let error):
+                    observer.onError(error)
+                }
+            })
+            return Disposables.create(with: {
+                request.cancel()
+            })
+            
+        }
+        
+        
+    }
     
     
 }

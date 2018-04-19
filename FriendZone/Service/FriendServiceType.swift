@@ -22,11 +22,7 @@ protocol FriendServiceType {
     @discardableResult
     func deleteFriend(id:Int)-> Observable<Result<Void, APIError>>
     
-//    
-//    @discardableResult
-//    func delete(task: Friend) -> Observable<Void>
-//    
-//    @discardableResult
-//    func update(task: Friend) -> Observable<Friend>
+    @discardableResult
+    func updateFriend( params:[String:Any], id:Int) -> Observable<JSON>
     
 }
